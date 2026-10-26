@@ -1,7 +1,7 @@
 <?php
 /**
  * Demo content of the WordPress Playground demo (blueprint.json runs it once, after the plugin is installed):
- * photos, portfolio items in four categories, six Forma Layouts and a page showing them.
+ * photos, portfolio items in four categories, a Forma Layout per layout type and card style, and a page showing them.
  */
 
 if ( !defined( 'ABSPATH' ) ) {
@@ -113,11 +113,20 @@ $forma_demo_layouts = [
 	'Portfolio · Freeform'  => [
 		'query'  => [ 'source' => 'portfolio', 'per_page' => 6 ],
 		'layout' => [ 'type' => 'freeform' ],
-		'skin'   => 'minimal',
+		'skin'   => 'polaroid',
 	],
 ];
 
-$forma_demo_shortcodes = '<!-- wp:paragraph --><p>Each grid below is a Forma Layout. Open Forma → Forma Layouts to change one; the page follows.</p><!-- /wp:paragraph -->' . "\n";
+// The card styles the layouts above don't use, three projects each
+foreach ( [ 'default' => 'Default', 'magazine' => 'Magazine', 'mono' => 'Mono' ] as $forma_demo_skin => $forma_demo_name ) {
+	$forma_demo_layouts[ 'Card style · ' . $forma_demo_name ] = [
+		'query'  => [ 'source' => 'portfolio', 'per_page' => 3 ],
+		'layout' => [ 'type' => 'grid' ],
+		'skin'   => $forma_demo_skin,
+	];
+}
+
+$forma_demo_shortcodes = '<!-- wp:paragraph --><p>Every grid on this page is a Forma Layout, each with its own layout type or card style. Change one in Forma → Forma Layouts and this page shows the change.</p><!-- /wp:paragraph -->' . "\n";
 
 foreach ( $forma_demo_layouts as $title => $settings ) {
 	$id = wp_insert_post( [
