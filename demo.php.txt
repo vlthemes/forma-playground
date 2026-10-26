@@ -153,9 +153,11 @@ $forma_demo_shortcodes = '';
 
 foreach ( $forma_demo_layouts as $title => $settings ) {
 	$id = wp_insert_post( [
-		'post_type'   => PostTypes::LAYOUT,
-		'post_status' => 'publish',
-		'post_title'  => $title,
+		'post_type'    => PostTypes::LAYOUT,
+		'post_status'  => 'publish',
+		'post_title'   => $title,
+		// The editor's preview block (the post type's template is only filled in for new posts)
+		'post_content' => '<!-- wp:forma/grid-settings /-->',
 	] );
 
 	if ( !$id || is_wp_error( $id ) ) {
