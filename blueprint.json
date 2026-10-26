@@ -4,7 +4,7 @@
 		"title": "Forma demo",
 		"author": "VLThemes"
 	},
-	"landingPage": "/wp-admin/edit.php?post_type=forma_layout",
+	"landingPage": "/",
 	"preferredVersions": {
 		"php": "8.2",
 		"wp": "latest"
@@ -27,8 +27,8 @@
 		{
 			"step": "installTheme",
 			"themeData": {
-				"resource": "wordpress.org/themes",
-				"slug": "twentytwentyfive"
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/theme.zip"
 			},
 			"options": {
 				"activate": true

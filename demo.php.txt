@@ -147,14 +147,19 @@ foreach ( $forma_demo_layouts as $title => $settings ) {
 	$forma_demo_shortcodes .= sprintf( "<!-- wp:heading --><h2 class=\"wp-block-heading\">%s</h2><!-- /wp:heading -->\n<!-- wp:shortcode -->[forma_grid id=\"%d\"]<!-- /wp:shortcode -->\n", esc_html( $title ), $id );
 }
 
-// A page with every layout, to see them on the site
-wp_insert_post( [
+// A page with every layout, the site's home page
+$forma_demo_page = wp_insert_post( [
 	'post_type'    => 'page',
 	'post_status'  => 'publish',
 	'post_title'   => 'Forma demo',
 	'post_name'    => 'forma-demo',
 	'post_content' => $forma_demo_shortcodes,
 ] );
+
+if ( $forma_demo_page && !is_wp_error( $forma_demo_page ) ) {
+	update_option( 'show_on_front', 'page' );
+	update_option( 'page_on_front', $forma_demo_page );
+}
 
 // A demo opens where the blueprint says: no welcome redirect, no request for a review
 delete_transient( 'forma_welcome_redirect' );
