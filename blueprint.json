@@ -1,0 +1,156 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Forma demo",
+		"author": "VLThemes"
+	},
+	"landingPage": "/wp-admin/edit.php?post_type=forma_layout",
+	"preferredVersions": {
+		"php": "8.2",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"blogname": "Forma demo"
+			}
+		},
+		{
+			"step": "installTheme",
+			"themeData": {
+				"resource": "wordpress.org/themes",
+				"slug": "twentytwentyfive"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/forma-grid-gallery.zip"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-01.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-01.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-02.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-02.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-03.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-03.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-04.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-04.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-05.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-05.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-06.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-06.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-07.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-07.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-08.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-08.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-09.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-09.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-10.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-10.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-11.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-11.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/photos/photo-12.webp",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/photos/photo-12.webp"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/forma-demo/demo.php",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/vlthemes/forma-playground/main/demo.php.txt"
+			}
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require '/wordpress/wp-load.php'; require WP_CONTENT_DIR . '/forma-demo/demo.php';"
+		}
+	]
+}

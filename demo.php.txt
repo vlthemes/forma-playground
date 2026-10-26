@@ -1,0 +1,185 @@
+<?php
+/**
+ * Demo content of the WordPress Playground demo (blueprint.json runs it once, after the plugin is installed):
+ * photos, portfolio items in four categories, ready Forma Layouts (Pro's too when Pro runs) and a page showing them.
+ */
+
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use VLT\Forma\Core\Config;
+use VLT\Forma\Core\PostTypes;
+
+require_once ABSPATH . 'wp-admin/includes/image.php';
+
+$forma_demo_dir = WP_CONTENT_DIR . '/forma-demo/photos/';
+$forma_demo_pro = class_exists( '\VLT\Forma\Pro\Pro' );
+
+// Photos into the Media Library
+$forma_demo_images = [];
+
+foreach ( glob( $forma_demo_dir . '*.webp' ) ?: [] as $file ) {
+	$upload = wp_upload_bits( basename( $file ), null, (string) file_get_contents( $file ) );
+
+	if ( !empty( $upload['error'] ) ) {
+		continue;
+	}
+
+	$id = wp_insert_attachment( [
+		'post_mime_type' => 'image/webp',
+		'post_title'     => ucwords( str_replace( '-', ' ', basename( $file, '.webp' ) ) ),
+		'post_status'    => 'inherit',
+	], $upload['file'] );
+
+	wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
+	$forma_demo_images[] = $id;
+}
+
+// Portfolio items: title, category, year, excerpt
+$forma_demo_items = [
+	[ 'Northwind', 'Branding', 2026, 'A ferry line\'s new identity, from the tickets to the hulls.' ],
+	[ 'Field Notes', 'Print', 2025, 'A field guide set in two colors, printed on uncoated stock.' ],
+	[ 'Orchard', 'Web', 2026, 'A cider maker\'s shop that reads like its labels.' ],
+	[ 'Halcyon', 'Branding', 2024, 'A quiet mark for a group of seaside hotels.' ],
+	[ 'Mono', 'Print', 2026, 'A year of exhibition posters in one typeface.' ],
+	[ 'Atlas', 'Web', 2025, 'A map app that finds the trail before the signal goes.' ],
+	[ 'Lumen', 'Motion', 2024, 'Opening titles for a festival of light.' ],
+	[ 'Bloom', 'Branding', 2025, 'Wrapping paper, ribbons and a mark that grows.' ],
+	[ 'Tidal', 'Motion', 2026, 'Three videos cut to the rhythm of the sea.' ],
+	[ 'Ember', 'Print', 2024, 'Menus that smell of bread, nearly.' ],
+	[ 'Kiln', 'Web', 2025, 'A ceramics studio\'s site, all glaze and texture.' ],
+	[ 'Vale', 'Branding', 2026, 'Labels for a valley\'s small vineyards.' ],
+];
+
+foreach ( $forma_demo_items as $k => $item ) {
+	$term = term_exists( $item[1], 'portfolio_category' ) ?: wp_insert_term( $item[1], 'portfolio_category' );
+
+	$id = wp_insert_post( [
+		'post_type'    => 'portfolio',
+		'post_status'  => 'publish',
+		'post_title'   => $item[0],
+		'post_excerpt' => $item[3],
+		'post_content' => '<!-- wp:paragraph --><p>' . esc_html( $item[3] ) . '</p><!-- /wp:paragraph -->',
+		'post_date'    => sprintf( '%d-%02d-%02d 10:00:00', $item[2], 12 - $k % 12, 1 + $k ),
+	] );
+
+	if ( $id && !is_wp_error( $term ) ) {
+		wp_set_object_terms( $id, (int) $term['term_id'], 'portfolio_category' );
+	}
+
+	if ( $id && isset( $forma_demo_images[ $k ] ) ) {
+		set_post_thumbnail( $id, $forma_demo_images[ $k ] );
+	}
+}
+
+// Ready layouts: title => settings over the defaults (Config::sanitize() fills and checks the rest)
+$forma_demo_toolbar = [
+	'filters' => [ 'enabled' => true, 'taxonomy' => 'portfolio_category', 'show_count' => true ],
+	'search'  => [ 'enabled' => true ],
+	'sort'    => [ 'enabled' => true ],
+];
+
+$forma_demo_layouts = [
+	'Portfolio · Masonry'   => $forma_demo_toolbar + [
+		'query'      => [ 'source' => 'portfolio', 'per_page' => 8 ],
+		'layout'     => [ 'type' => 'masonry' ],
+		'skin'       => 'caption',
+		'pagination' => [ 'type' => 'loadmore' ],
+		'click'      => [ 'action' => 'lightbox' ],
+	],
+	'Portfolio · Grid'      => [
+		'query'      => [ 'source' => 'portfolio', 'per_page' => 6 ],
+		'layout'     => [ 'type' => 'grid' ],
+		'skin'       => 'overlay',
+		'filters'    => [ 'enabled' => true, 'taxonomy' => 'portfolio_category' ],
+		'pagination' => [ 'type' => 'numbers' ],
+	],
+	'Portfolio · Metro'     => [
+		'query'  => [ 'source' => 'portfolio', 'per_page' => 12 ],
+		'layout' => [ 'type' => 'metro' ],
+		'skin'   => 'fade',
+	],
+	'Gallery · Justified'   => [
+		'query'  => [ 'source' => 'media', 'images' => $forma_demo_images, 'per_page' => -1 ],
+		'layout' => [ 'type' => 'justified' ],
+		'skin'   => 'minimal',
+		'click'  => [ 'action' => 'lightbox' ],
+	],
+	'Featured · Slider'     => [
+		'query'  => [ 'source' => 'portfolio', 'per_page' => 8 ],
+		'layout' => [ 'type' => 'slider' ],
+		'skin'   => 'glass',
+	],
+	'Journal · Freeform'    => [
+		'query'  => [ 'source' => 'portfolio', 'per_page' => 6 ],
+		'layout' => [ 'type' => 'freeform' ],
+		'skin'   => 'minimal',
+	],
+];
+
+if ( $forma_demo_pro ) {
+	$forma_demo_layouts += [
+		'Pro · List with Index'       => [
+			'query'   => [ 'source' => 'portfolio', 'per_page' => -1 ],
+			'layout'  => [ 'type' => 'list' ],
+			'skin'    => 'index',
+			'filters' => [ 'enabled' => true, 'taxonomy' => 'portfolio_category', 'template' => 'line' ],
+		],
+		'Pro · Tilt cards, infinite'  => $forma_demo_toolbar + [
+			'query'      => [ 'source' => 'portfolio', 'per_page' => 6 ],
+			'layout'     => [ 'type' => 'grid', 'grid' => [ 'ratio' => 'custom', 'ratio_custom' => '4:5' ] ],
+			'skin'       => 'tilt',
+			'pagination' => [ 'type' => 'infinite' ],
+			'animation'  => [ 'effect' => 'reveal' ],
+		],
+		'Pro · Proofing gallery'      => [
+			'query'    => [ 'source' => 'media', 'images' => $forma_demo_images, 'per_page' => -1 ],
+			'layout'   => [ 'type' => 'masonry' ],
+			'skin'     => 'caption',
+			'click'    => [ 'action' => 'lightbox', 'protect' => true ],
+			'proofing' => [ 'enabled' => true, 'limit' => 10 ],
+		],
+		'Pro · Grid with an insert'   => [
+			'query'   => [ 'source' => 'portfolio', 'per_page' => 9 ],
+			'layout'  => [ 'type' => 'grid' ],
+			'skin'    => 'glide',
+			'inserts' => [ [ 'content' => '<h3>Your banner here</h3><p>Any shortcode or HTML, between the items.</p>', 'position' => 3 ] ],
+		],
+	];
+}
+
+$forma_demo_shortcodes = '';
+
+foreach ( $forma_demo_layouts as $title => $settings ) {
+	$id = wp_insert_post( [
+		'post_type'   => PostTypes::LAYOUT,
+		'post_status' => 'publish',
+		'post_title'  => $title,
+	] );
+
+	if ( !$id || is_wp_error( $id ) ) {
+		continue;
+	}
+
+	update_post_meta( $id, PostTypes::META_CONFIG, wp_slash( wp_json_encode( Config::sanitize( Config::merge( Config::defaults(), $settings ) ) ) ) );
+	update_post_meta( $id, PostTypes::META_CSS, PostTypes::DEFAULT_CSS );
+
+	$forma_demo_shortcodes .= sprintf( "<!-- wp:heading --><h2 class=\"wp-block-heading\">%s</h2><!-- /wp:heading -->\n<!-- wp:shortcode -->[forma_grid id=\"%d\"]<!-- /wp:shortcode -->\n", esc_html( $title ), $id );
+}
+
+// A page with every layout, to see them on the site
+wp_insert_post( [
+	'post_type'    => 'page',
+	'post_status'  => 'publish',
+	'post_title'   => 'Forma demo',
+	'post_name'    => 'forma-demo',
+	'post_content' => $forma_demo_shortcodes,
+] );
+
+// A demo opens where the blueprint says: no welcome redirect, no request for a review
+delete_transient( 'forma_welcome_redirect' );
+update_option( 'forma_review', 'done', false );
+
+update_option( 'permalink_structure', '/%postname%/' );
+flush_rewrite_rules();
