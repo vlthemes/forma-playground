@@ -45,6 +45,10 @@
 			}
 		},
 		{
+			"step": "mkdir",
+			"path": "/wordpress/wp-content/forma-demo/photos"
+		},
+		{
 			"step": "writeFile",
 			"path": "/wordpress/wp-content/forma-demo/photos/photo-01.webp",
 			"data": {
